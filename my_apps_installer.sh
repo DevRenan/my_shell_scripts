@@ -11,6 +11,7 @@ PROGRAMAS_PARA_INSTALAR=(
 	"teams-for-linux"
 	zoom-client
   	"aws-cli --classic"
+	onlyoffice-desktopeditors
 )
 
 function install_snap_arch(){
