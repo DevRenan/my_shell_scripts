@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 
 # Edite aqui os programas que deseja instalar com o gerenciador de pacotes universal SNAP
 PROGRAMAS_PARA_INSTALAR=(
@@ -17,7 +17,6 @@ PROGRAMAS_PARA_INSTALAR=(
 function install_snap_arch(){
 	sudo pacman -Syyu
 	sudo pacman -S git
-	#https://snapcraft.io/docs/installing-snapd
 	cd /tmp
 	git clone https://aur.archlinux.org/snapd.git
 	cd snapd
