@@ -16,6 +16,7 @@ PROGRAMAS_PARA_INSTALAR=(
 
 function install_snap_arch(){
 	sudo pacman -Syyu
+	sudo pacman -S base-devel
 	sudo pacman -S git
 	cd /tmp
 	git clone https://aur.archlinux.org/snapd.git
