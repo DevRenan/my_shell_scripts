@@ -1,15 +1,17 @@
 #!/bin/bash
 
 URL=$1
-PROJECTS_PATH='~/my_projects'
-PROJECT_NAME=$(echo $URL | awk -F "/" '{print $5}')
+PROJECTS_PATH=$HOME/my_projects
+PROJECT_NAME=$(echo $URL | awk -F "/" '{print $5}' | awk -F "."  '{print $1}')
 #PROJECT_NAME=$(echo $URL  | grep -o '[^/]*$') ##com grep
 PROJECT_PATH=$PROJECTS_PATH/$PROJECT_NAME
+DISTRO=$(cat /etc/*-release | grep ^ID= | cut -b4-)
 
 function run_prerequisites(){
-  git config credential.helper store
-  sudo pacman -S --needed curl git libffi libyaml openssl base-devel zlib >> /dev/null
+	install_essential_libs_$DISTRO
 
+  git config credential.helper store
+  
   if !(which asdf); then
     echo Instalando ASDF 
     git clone https://github.com/asdf-vm/asdf.git ~/.asdf
@@ -28,16 +30,33 @@ function run_prerequisites(){
 }
 
 function download_project(){
-  git clone $URL $PROJECT_PATH
+  if [ ! -d $PROJECT_PATH ] 
+  then 
+    git clone $URL $PROJECT_PATH
+  fi
   install_project_dependencies
+}
+
+function install_essential_libs_arch(){
+  sudo pacman -S --needed curl git libffi libyaml openssl base-devel zlib >> /dev/null
+}
+
+function install_essential_libs_ubuntu(){
+  sudo apt update
+  sudo apt install -y git curl libssl-dev libreadline-dev zlib1g-dev autoconf bison build-essential libyaml-dev libreadline-dev libncurses5-dev libffi-dev libgdbm-dev  >> /dev/null
 }
 
 function install_project_dependencies(){
   cd $PROJECT_PATH && asdf install
-  #TODO 
-  #Criad um metodo que identifica o gerenciador de pacotes da linguagem, o instala, instala os pacotes 
-  # e roda a aplicaçao 
-  #&& bundle install >> /dev/null
+  asdf current 1> temp_file 2>/dev/null
+  programming_language=$(cat temp_file | awk '{print $1}')
+  rm temp_file
+  install_project_dependencies_$programming_language
+}
+
+function install_project_dependencies_ruby(){
+  bundler_version=$(cat Gemfile.lock | grep -A 1 "BUNDLED WITH"| grep [0-9.-])
+  cd $PROJECT_PATH && gem install bundler -v $bundler_version && bundle install
 }
 
 run_prerequisites
