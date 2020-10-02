@@ -2,8 +2,8 @@
 
 URL=$1
 PROJECTS_PATH=$HOME/my_projects
-PROJECT_NAME=$(echo $URL | awk -F "/" '{print $5}' | awk -F "."  '{print $1}')
-#PROJECT_NAME=$(echo $URL  | grep -o '[^/]*$') ##com grep
+#PROJECT_NAME=$(echo $URL | awk -F "/" '{print $5}' | awk -F "."  '{print $1}')
+PROJECT_NAME=$(echo $URL  | grep -o '[^/]*$' | awk -F "."  '{print $1}') ##com grep
 PROJECT_PATH=$PROJECTS_PATH/$PROJECT_NAME
 DISTRO=$(cat /etc/*-release | grep ^ID= | cut -b4-)
 
@@ -30,6 +30,7 @@ function run_prerequisites(){
 }
 
 function download_project(){
+  echo $PROJECT_PATH
   if [ ! -d $PROJECT_PATH ] 
   then 
     git clone $URL $PROJECT_PATH
@@ -43,7 +44,12 @@ function install_essential_libs_arch(){
 
 function install_essential_libs_ubuntu(){
   sudo apt update
-  sudo apt install -y git curl libssl-dev libreadline-dev zlib1g-dev autoconf bison build-essential libyaml-dev libreadline-dev libncurses5-dev libffi-dev libgdbm-dev  >> /dev/null
+  ##https://github.com/rbenv/ruby-build/issues/1146
+  #sudo apt install libssl-dev # Ruby versions > 2.4
+  sudo apt install libssl1.0-dev # Ruby versions < 2.4
+  #lib do mysql
+  sudo apt install -y libmysqlclient-dev
+  sudo apt install -y git curl zlib1g-dev autoconf bison build-essential libyaml-dev libreadline-dev libncurses5-dev libffi-dev libgdbm-dev
 }
 
 function install_project_dependencies(){
