@@ -1,7 +1,7 @@
 #!/bin/bash
 
 URL=$1
-PROJECTS_PATH=$HOME/my_projects
+PROJECTS_PATH=$HOME/projects
 #PROJECT_NAME=$(echo $URL | awk -F "/" '{print $5}' | awk -F "."  '{print $1}')
 PROJECT_NAME=$(echo $URL  | grep -o '[^/]*$' | awk -F "."  '{print $1}') ##com grep
 PROJECT_PATH=$PROJECTS_PATH/$PROJECT_NAME
